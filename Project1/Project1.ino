@@ -4,14 +4,14 @@
 #include "NewPing.h"
 
 // define ultrasonic pins
-#define TRIG_PIN   ?       
-#define ECHO_PIN    ?     
+#define TRIG_PIN   5       
+#define ECHO_PIN    4     
 
 // define buzzer pin ？
-#define BUZZER_PIN  ？   
+#define BUZZER_PIN  35   
 
 //Define Built-in LED pin
-#define LED_PIN ？      
+#define LED_PIN 1      
 
 // Maximum distance we want to ping for (in centimeters).
 #define MAX_DISTANCE 400
@@ -70,9 +70,13 @@ int noteDurations_low[] = {
 void setup() {
 
   // initialize serial monitor
-     ???
+  Serial.begin(9600);        // ***Start the serial communication set baud rate.***
+  pinMode(ECHO_PIN, INPUT);
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(BUZZER_PIN, OUTPUT);       // Set pin connected to LED as an output pin
  // set pins mode
-    ???
+  
  
   
 }
@@ -80,21 +84,52 @@ void setup() {
 void loop() { 
   // Get the distance from the Ultrasonic Sensor
     float distance = sonar.ping_cm();
-  
-      if (distance > 10 ) {
+    Serial.print("Distance: ");
+    Serial.print(distance);
+    Serial.println(" cm");
+
+    delay(500);
+
+      if (distance > 10 || distance<=0) {
         // turn on built in LED
-        ???
-      } else if (distance <= 10 && distance >= 5) {
+        digitalWrite(LED_PIN, HIGH);
+      }
+      else if (distance <= 10 && distance >= 5) {
         // turn off built in LED
-        ???
+        digitalWrite(LED_PIN, LOW);
+
         // play high tone Jingle-Bells Iterate over the notes of the melody_high:
-        ???
-      } else if (distance <5 ) {
+        Serial.println("Playing Jingle Bells...");
+        // Iterate over the notes of the melody:
+        for (int thisNote = 0; thisNote < 14 ; thisNote++) {
+        // To calculate the note duration, take one second divided by the note type.
+        int noteDuration = 1000 / noteDurations_high[thisNote];
+        tone(BUZZER_PIN, melody_high[thisNote], noteDuration);
+        // To distinguish the notes, set a minimum time between them.
+        int pauseBetweenNotes = noteDuration * 1.30;
+        delay(pauseBetweenNotes);
+        // Stop the tone playing:
+        noTone(BUZZER_PIN);}
+
+      } 
+      else if (distance <5 ) {
         // turn off built in LED
-        ???
+        digitalWrite(LED_PIN, LOW);
+
         // play low tone Jingle-Bells Iterate over the notes of the melody_low
-        ???
+        Serial.println("Playing Jingle Bells...");
+        // Iterate over the notes of the melody:
+        for (int thisNote = 0; thisNote < 14 ; thisNote++) {
+        // To calculate the note duration, take one second divided by the note type.
+        int noteDuration = 1000 / noteDurations_low[thisNote];
+        tone(BUZZER_PIN, melody_low[thisNote], noteDuration);
+        // To distinguish the notes, set a minimum time between them.
+        int pauseBetweenNotes = noteDuration * 1.30;
+        delay(pauseBetweenNotes);
+        // Stop the tone playing:
+        noTone(BUZZER_PIN);
    
 } 
-  delay(?);
+  delay(100); 
+      }
 }
